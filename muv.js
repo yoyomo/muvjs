@@ -9,14 +9,17 @@ const init =
 
 // UPDATE
 
+const Increment = "increment"
+const Decrement = "decrement"
+
 const update = model => action => {
   switch (action) {
-    case "increment": {
+    case Increment: {
       model = { ...model };
       model.count = model.count + 1;
       break;
     }
-    case "decrement": {
+    case Decrement: {
       model = { ...model };
       model.count = model.count - 1;
       break;
@@ -27,8 +30,18 @@ const update = model => action => {
 
 // VIEW 
 
-const component = elementType => attributes => {
+const view = dispatch => model =>
+  div()(
+    button({ onclick: dispatch(Decrement) })('-')
+    , div()(model.count)
+    , button({ onclick: dispatch(Increment) })('+')
+  )
+
+// MAIN
+
+const component = elementType => attributes => (...children) => {
   let element = document.createElement(elementType);
+  
   if (attributes) {
     for (let attr in attributes) {
       if (typeof attributes[attr] === "function") {
@@ -39,37 +52,26 @@ const component = elementType => attributes => {
     }
   }
 
-  return (...children) => {
-    if (children) {
-      children.map(child => {
-        if (typeof child === "object") {
-          element.appendChild(child);
-        } else {
-          element.innerText = child;
-        }
-      });
-    }
-    return element;
+  if (children) {
+    children.map(child => {
+      if (typeof child === "object") {
+        element.appendChild(child);
+      } else {
+        element.innerText = child;
+      }
+    });
   }
+  
+  return element;
 }
 
 const div = component('div');
 const button = component('button');
 
-
-
-const view = dispatch => model => root => {
+const render = dispatch => model => root => {
   root.innerHTML = null;
-  [
-    , button({ onclick: dispatch("decrement") })('-')
-    , div()(model.count)
-    , button({ onclick: dispatch("increment") })('+')
-
-  ].forEach(child => root.appendChild(child))
+  root.appendChild(view(dispatch)(model))
 }
-
-
-// MAIN
 
 const mount = rootId => {
   let root = document.getElementById(rootId);
@@ -77,10 +79,10 @@ const mount = rootId => {
   const dispatch = action => {
     return () => {
       model = update(model)(action);
-      view(dispatch)(model)(root);
+      render(dispatch)(model)(root);
     }
   }
-  view(dispatch)(init)(root)
+  render(dispatch)(init)(root)
 }
 
 mount("root")
