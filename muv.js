@@ -9,8 +9,7 @@ const init =
 
 // UPDATE
 
-const update =
-  model => action => {
+const update = model => action => {
     switch (action) {
       case "increment": {
         model = { ...model };
@@ -59,18 +58,15 @@ const button = component('button');
 
 
 
-const view =
-  dispatch =>
-    model =>
-      root => {
-        root.innerHTML = null;
-        [
-          , button({ onclick: dispatch("decrement") })('-')
-          , div()(model.count)
-          , button({ onclick: dispatch("increment") })('+')
+const view = dispatch => model => root => {
+  root.innerHTML = null;
+  [
+    , button({ onclick: dispatch("decrement") })('-')
+    , div()(model.count)
+    , button({ onclick: dispatch("increment") })('+')
 
-        ].forEach(child => root.appendChild(child))
-      }
+  ].forEach(child => root.appendChild(child))
+}
 
 
 // MAIN
