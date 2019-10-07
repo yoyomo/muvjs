@@ -10,20 +10,20 @@ const init =
 // UPDATE
 
 const update = model => action => {
-    switch (action) {
-      case "increment": {
-        model = { ...model };
-        model.count = model.count + 1;
-        break;
-      }
-      case "decrement": {
-        model = { ...model };
-        model.count = model.count - 1;
-        break;
-      }
+  switch (action) {
+    case "increment": {
+      model = { ...model };
+      model.count = model.count + 1;
+      break;
     }
-    return model;
+    case "decrement": {
+      model = { ...model };
+      model.count = model.count - 1;
+      break;
+    }
   }
+  return model;
+}
 
 // VIEW 
 
