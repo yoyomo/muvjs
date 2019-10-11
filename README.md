@@ -10,12 +10,14 @@ MUV architecture in pure javascript
     
     export const init =
       {
+        // initialize your model
         ...
       };
     
     // UPDATE
     
     export const update = model => action => {
+      //handle actions, and change model accordingly
       ...
       return model;
     };
@@ -23,6 +25,7 @@ MUV architecture in pure javascript
     // VIEW
     
     export const view = dispatch => model =>
+      // display app according to the model
       ...
     
     
@@ -54,6 +57,7 @@ Have fun!
 `App.js`
 ```js
 "use strict";
+import {div, button} from './node_modules/muvjs/muv-dom.js';
 
 // MODEL
 
