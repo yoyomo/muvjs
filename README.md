@@ -1,31 +1,31 @@
 # muvjs
-MUV architecture in pure javascript
+MUV architecture in modular javascript
 
+### Background
+MUV (Model Update View), otherwise known as MVC (Model View Component), is found in many applications' core software architecture using a one way state change. The idea revolves around state immutability and functional programming. For example, a ***View*** listens for ***user events*** that fire an ***action*** through a ***dispatch*** which is handled by an ***update*** function that returns a new ***model*** which gets re***rendered*** in the ***view***
+
+Note: MuvJS's architecture is heavily inspired in ELM, and React+Redux format. I encourage you to learn both.
 ### Usage
-1. Construct your modular `App.js` with the following syntax
+1. Construct your modular app `App.js` with the following syntax
     ```js
-    import {div} from './node_modules/muvjs/muv-dom.js';
-
-    // MODEL
+    
+    // initialize your model
     
     export const init =
       {
-        // initialize your model
         ...
       };
     
-    // UPDATE
+    //handle actions, and change model accordingly
     
     export const update = model => action => {
-      //handle actions, and change model accordingly
       ...
       return model;
     };
     
-    // VIEW
+    // display app according to the model
     
     export const view = dispatch => model =>
-      // display app according to the model
       ...
     
     
@@ -45,7 +45,7 @@ MUV architecture in pure javascript
 3. create the root div, and include your muv modular initializer in your `index.html`
     ```html
     <div id="root"></div>
-    <script type="module" src="index.mjs"></script>
+    <script type="module" src="index.js"></script>
     ```
 
 Then you can edit your `App.js` to your needs
