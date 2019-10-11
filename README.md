@@ -12,9 +12,7 @@ Note: MuvJS's architecture is heavily inspired in ELM, and React+Redux format. I
     // initialize your model
     
     export const init =
-      {
-        ...
-      };
+      ...
     
     //handle actions, and change model accordingly
     
