@@ -98,3 +98,7 @@ const view = dispatch => model =>
 ```
 
 view full example at https://github.com/yoyomo/muvjs-example
+
+### Create MuvJS App
+You can now use a brew command to create a MuvJS app from scratch: 
+https://github.com/yoyomo/create-muvjs-app
