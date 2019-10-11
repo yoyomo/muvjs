@@ -1,0 +1,24 @@
+{
+  "name": "muvjs",
+  "version": "0.1.0",
+  "description": "MUV architecture in pure javascript",
+  "main": "sample/muv.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yoyomo/muvjs.git"
+  },
+  "keywords": [
+    "muv",
+    "mvc",
+    "js"
+  ],
+  "author": "Armando J. Ortiz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yoyomo/muvjs/issues"
+  },
+  "homepage": "https://github.com/yoyomo/muvjs#readme"
+}

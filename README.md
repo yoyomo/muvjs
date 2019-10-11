@@ -1,47 +1,57 @@
 # muvjs
 MUV architecture in pure javascript
 
-## How-to use
-1. create the root div 
-```html
-<div id="root"></div>
-```
-2. copy or link `muv.js` and `virtual-dom.js` 
-```html
-<script src="muv.js"></script>
-<script src="virtual-dom.js"></script>
-```
+### Usage
+1. Construct your modular `App.js` with the following syntax
+    ```js
+    import {div} from './node_modules/muvjs/muv-dom.js';
 
-3. Call muv 
-```js
-muv(init)(update)(view)("root")
-```
+    // MODEL
+    
+    export const init =
+      {
+        ...
+      };
+    
+    // UPDATE
+    
+    export const update = model => action => {
+      ...
+      return model;
+    };
+    
+    // VIEW
+    
+    export const view = dispatch => model =>
+      ...
+    
+    
+    ```
+    importing components from `muv-dom.js`,
+     and exporting the initial model `init`,
+      the update function `update`
+       and the view function `view`
 
-Then you can edit `app.js` to your needs
+2. Create your muv modular initializer `index.js` 
+    ```js
+    import {muv} from './node_modules/muvjs/muv.js';
+    import {init, update, view} from './App.js'
+    
+    muv(init)(update)(view)("root");
+    ```
+3. create the root div, and include your muv modular initializer in your `index.html`
+    ```html
+    <div id="root"></div>
+    <script type="module" src="index.mjs"></script>
+    ```
+
+Then you can edit your `App.js` to your needs
 
 Have fun!
 
 ## Example
-```html
-<!DOCTYPE html>
-<html>
 
-<body>
-  <div id="root"></div>
-
-  <script src="muv.js"></script>
-  <script src="virtual-dom.js"></script>
-
-  <script src="app.js"></script>
-  <script>
-    muv(init)(update)(view)("root")
-  </script>
-</body>
-
-</html>
-```
-
-`app.js`
+`App.js`
 ```js
 "use strict";
 
@@ -84,3 +94,5 @@ const view = dispatch => model =>
     ]
   )
 ```
+
+view full example at https://github.com/yoyomo/muvjs-example

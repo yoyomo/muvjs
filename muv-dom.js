@@ -14,7 +14,7 @@ const setAttributes = element => attributes => {
       element.setAttribute(attr, attributes[attr]);
     }
   }
-}
+};
 
 const appendChildren = element => child => {
   if (isNull(child)) return;
@@ -28,17 +28,17 @@ const appendChildren = element => child => {
   } else {
     element.innerText = child;
   }
-}
+};
 
-const component = elementType => attributes => (...children) => {
+export const component = elementType => attributes => (...children) => {
   let element = document.createElement(elementType);
 
   setAttributes(element)(attributes);
 
-  appendChildren(element)(children)
+  appendChildren(element)(children);
 
   return element;
-}
+};
 
-const div = component('div');
-const button = component('button');
+export const div = component('div');
+export const button = component('button');
