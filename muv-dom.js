@@ -30,7 +30,7 @@ const appendChildren = element => child => {
   }
 };
 
-const component = elementType => attributes => (...children) => {
+export const component = elementType => attributes => (...children) => {
   let element = document.createElement(elementType);
 
   setAttributes(element)(attributes);
