@@ -112,20 +112,14 @@ const update = model => action => {
 
 // VIEW 
 
-const view = dispatch => model => {
-  const dispatcher = {
-    decrement: () => dispatch(Decrement),
-    increment: () => dispatch(Increment)
-  };
-
+const view = dispatch => model => 
   div()(
     [
-      , button({ onclick: dispatcher.decrement })('-')
+      , button({ onclick: () => dispatch(Decrement) })('-')
       , div()(model.count)
-      , button({ onclick: dispatcher.increment })('+')
+      , button({ onclick: () => dispatch(Increment) })('+')
     ]
   )
-}
 ```
 
 view full example at https://github.com/yoyomo/muvjs-example
