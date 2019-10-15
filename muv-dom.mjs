@@ -20,7 +20,7 @@ const appendChildren = element => child => {
   if (isNull(child)) return;
 
   if (typeof child === "object") {
-    if (child.length > 0) {
+    if (child instanceof Array) {
       child.map(c => appendChildren(element)(c))
     } else {
       element.appendChild(child);
@@ -42,3 +42,8 @@ export const component = elementType => attributes => (...children) => {
 
 export const div = component('div');
 export const button = component('button');
+export const label = component('label');
+export const input = component('input');
+export const textarea = component('textarea');
+export const ul = component('ul');
+export const li = component('li');
