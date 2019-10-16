@@ -1,8 +1,6 @@
 "use strict";
 
-// VIRTUAL DOM
-
-const isNull = value => value === undefined || value === null;
+export const isNull = value => value === undefined || value === null;
 
 const setAttributes = element => attributes => {
   if (isNull(attributes)) return;
@@ -23,7 +21,7 @@ const appendChildren = element => child => {
     if (child instanceof Array) {
       child.map(c => appendChildren(element)(c))
     } else {
-      element.appendChild(child);
+      element.appendChild(child.render());
     }
   } else {
     element.innerText = child;
@@ -31,14 +29,61 @@ const appendChildren = element => child => {
 };
 
 export const component = elementType => attributes => (...children) => {
-  let element = document.createElement(elementType);
+  return {
+    elementType: elementType,
+    attributes: attributes,
+    children: children,
+    render: () => {
+      let element = document.createElement(elementType);
 
-  setAttributes(element)(attributes);
+      setAttributes(element)(attributes);
 
-  appendChildren(element)(children);
+      appendChildren(element)(children);
 
-  return element;
-};
+      return element;
+    }
+  };
+}
+
+const getChildrenOrArray = view => {
+  if ((view.children && view.children.length > 0)) {
+    return view.children
+  } else if (view instanceof Array) {
+    return view
+  }
+}
+
+export const rerender = element => oldView => newView => index => {
+  if (
+    (typeof oldView === "object"
+      && typeof oldView === typeof newView
+      && oldView.elementType === newView.elementType
+      && JSON.stringify(oldView.attributes) === JSON.stringify(newView.attributes))
+    || (oldView === newView)) {
+
+    let newChildren = getChildrenOrArray(newView);
+    let oldChildren = getChildrenOrArray(oldView);
+
+    if (!isNull(newChildren)) {
+      newChildren.map((newChild, i) => {
+        if (!isNull(oldChildren[i])) {
+          if (element.children[index]) {
+            rerender(element.children[index])(oldChildren[i])(newChild)(i)
+          } else if (!isNull(element.innerText)) {
+            rerender(element)(oldChildren[i])(newChild)(i)
+          }
+        } else if (newChild.render) {
+          element.appendChild(newChild.render())
+        }
+
+      })
+    }
+
+  } else {
+    element.innerText = newView;
+    element.value = newView;
+  }
+}
 
 export const div = component('div');
 export const button = component('button');
