@@ -14,14 +14,14 @@ const setAttributes = element => attributes => {
   }
 };
 
-const appendChildren = element => child => {
+const appendChildren = element => child => index => {
   if (isNull(child)) return;
 
   if (typeof child === "object") {
-    if (child instanceof Array) {
-      child.map(c => appendChildren(element)(c))
+    if (isArray(child)) {
+      child.map((c, i) => appendChildren(element)(c)(i))
     } else {
-      element.appendChild(child.render());
+      element.appendChild(child.render(element.getAttribute("key"), index));
     }
   } else {
     element.innerText = child;
@@ -32,56 +32,74 @@ export const component = elementType => attributes => (...children) => {
   return {
     elementType: elementType,
     attributes: attributes,
-    children: children,
-    render: () => {
+    children: children.flat(),
+    genKey: function (parentKey, index) {
+      const geneKey = parentKey ? `${parentKey}-${index}-` : ""
+      this.attributes = this.attributes || {};
+      this.attributes["key"] = geneKey + elementType;
+    },
+    render: function (parentKey, index) {
       let element = document.createElement(elementType);
 
-      setAttributes(element)(attributes);
+      this.genKey(parentKey, index);
+      setAttributes(element)(this.attributes);
 
-      appendChildren(element)(children);
+      appendChildren(element)(this.children)(0);
 
       return element;
     }
   };
 }
 
-const getChildrenOrArray = view => {
-  if ((view.children && view.children.length > 0)) {
-    return view.children
-  } else if (view instanceof Array) {
-    return view
+const isArray = a => !isNull(a) && a instanceof Array
+
+export const rerender = parent => oldView => newView => index => {
+
+  if (typeof oldView !== "object" && typeof newView !== "object") {
+    if (oldView !== newView) {
+      parent.innerText = newView;
+      parent.value = newView;
+    }
+    return;
   }
-}
 
-export const rerender = element => oldView => newView => index => {
-  if (
-    (typeof oldView === "object"
-      && typeof oldView === typeof newView
-      && oldView.elementType === newView.elementType
-      && JSON.stringify(oldView.attributes) === JSON.stringify(newView.attributes))
-    || (oldView === newView)) {
+  if (isNull(oldView) && newView.render) {
+    parent.appendChild(newView.render(parent.getAttribute("key"), index));
+    return;
+  }
 
-    let newChildren = getChildrenOrArray(newView);
-    let oldChildren = getChildrenOrArray(oldView);
+  if ((!newView.attributes || !newView.attributes["key"]) && newView.genKey) {
+    newView.genKey(parent.getAttribute("key"), index)
+  }
+
+
+  if (oldView.elementType === newView.elementType && oldView.attributes["key"] === newView.attributes["key"]) {
+
+    if (JSON.stringify(oldView.attributes) === JSON.stringify(newView.attributes)) {
+      let element = parent.children[index] || parent;
+      for (let attr in {...oldView.attributes, ...newView.attributes}) {
+        if (oldView.attributes[attr] !== newView.attributes[attr]) {
+          if (typeof newView.attributes[attr] === "function") {
+            element[attr] = newView.attributes[attr];
+          } else {
+            element.setAttribute(attr, newView.attributes[attr]);
+          }
+        }
+      }
+    }
+
+    const newChildren = newView.children;
+    const oldChildren = oldView.children;
 
     if (!isNull(newChildren)) {
-      newChildren.map((newChild, i) => {
-        if (!isNull(oldChildren[i])) {
-          if (element.children[index]) {
-            rerender(element.children[index])(oldChildren[i])(newChild)(i)
-          } else if (!isNull(element.innerText)) {
-            rerender(element)(oldChildren[i])(newChild)(i)
-          }
-        } else if (newChild.render) {
-          element.appendChild(newChild.render())
-        }
-
-      })
+      for (let i = 0; i < newChildren.length; i++) {
+          rerender(parent.children[index])(oldChildren[i])(newChildren[i])(i)
+      }
     }
 
   } else {
-    element.innerText = newView;
-    element.value = newView;
+    parent.insertBefore(newView.render(parent.getAttribute("key"), index), parent.children[index])
+    parent.removeChild(parent.children[index + 1])
   }
 }
 
