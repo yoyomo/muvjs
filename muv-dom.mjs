@@ -68,6 +68,11 @@ export const rerender = parent => oldView => newView => index => {
     return;
   }
 
+  if (isNull(newView)) {
+    parent.removeChild(parent.children[index]);
+    return;
+  }
+
   if ((!newView.attributes || !newView.attributes["key"]) && newView.genKey) {
     newView.genKey(parent.getAttribute("key"), index)
   }
@@ -91,10 +96,9 @@ export const rerender = parent => oldView => newView => index => {
     const newChildren = newView.children;
     const oldChildren = oldView.children;
 
-    if (!isNull(newChildren)) {
-      for (let i = 0; i < newChildren.length; i++) {
-          rerender(parent.children[index])(oldChildren[i])(newChildren[i])(i)
-      }
+    const childrenNum = newChildren.length >= oldChildren.length ? newChildren.length : oldChildren.length;
+    for (let i = 0; i < childrenNum; i++) {
+      rerender(parent.children[index])(oldChildren[i])(newChildren[i])(i)
     }
 
   } else {
