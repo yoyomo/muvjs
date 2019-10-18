@@ -1,6 +1,7 @@
 "use strict";
 
 export const isNull = value => value === undefined || value === null;
+export const isArray = a => !isNull(a) && a instanceof Array
 
 const setAttributes = element => attributes => {
   if (isNull(attributes)) return;
@@ -51,8 +52,6 @@ export const component = elementType => attributes => (...children) => {
   };
 }
 
-const isArray = a => !isNull(a) && a instanceof Array
-
 export const rerender = parent => oldView => newView => index => {
 
   if (typeof oldView !== "object" && typeof newView !== "object") {
@@ -80,7 +79,7 @@ export const rerender = parent => oldView => newView => index => {
 
   if (oldView.elementType === newView.elementType && oldView.attributes["key"] === newView.attributes["key"]) {
 
-    if (JSON.stringify(oldView.attributes) === JSON.stringify(newView.attributes)) {
+    if (JSON.stringify(oldView.attributes) !== JSON.stringify(newView.attributes)) {
       let element = parent.children[index] || parent;
       for (let attr in {...oldView.attributes, ...newView.attributes}) {
         if (oldView.attributes[attr] !== newView.attributes[attr]) {

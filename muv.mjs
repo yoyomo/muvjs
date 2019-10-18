@@ -1,5 +1,5 @@
 "use strict";
-import {isNull, rerender} from 'muvjs/muv-dom'
+import {rerender} from 'muvjs/muv-dom'
 
 const handleEffects = subscriptions => effects => {
   if (!effects) return;
@@ -8,7 +8,7 @@ const handleEffects = subscriptions => effects => {
   })
 }
 
-export const muv = model => update => view => subscriber => ignition => rootId => {
+export const muv = model => update => view => ignition => subscriber => rootId => {
 
   let root = document.getElementById(rootId);
   let subscriptions;
