@@ -1,6 +1,5 @@
 "use strict";
-
-// MAIN
+import {rerender} from 'muvjs/muv-dom'
 
 const handleEffects = subscriptions => effects => {
   if (!effects) return;
@@ -9,21 +8,25 @@ const handleEffects = subscriptions => effects => {
   })
 }
 
-const render = dispatch => model => view => root => {
-  root.innerHTML = null;
-  root.appendChild(view(dispatch)(model))
-};
+export const muv = model => update => view => ignition => subscriber => rootId => {
 
-export const muv = model => update => view => subscriber => ignition => rootId => {
   let root = document.getElementById(rootId);
   let subscriptions;
+  let oldView;
+
   const dispatch = action => {
     const updated = update(model)(action);
     model = updated.model;
-    handleEffects(subscriptions)(updated.effects)
-    render(dispatch)(model)(view)(root);
+    handleEffects(subscriptions)(updated.effects);
+
+    const newView = view(dispatch)(model);
+    rerender(root)(oldView)(newView)(0)
+    oldView = newView;
   };
-  render(dispatch)(model)(view)(root);
+
+  root.innerHTML = null;
+  oldView = view(dispatch)(model)
+  root.appendChild(oldView.render())
 
   subscriptions = subscriber(dispatch);
   ignition(dispatch)
