@@ -6,7 +6,7 @@ MUV (**Model Update View**), otherwise known as MVC (Model View Component), is f
 
 Note: MuvJS's architecture is heavily inspired in ELM, and React+Redux format. I encourage you to learn both. 
 
-Since v2.0, there are two new concepts added: Subscription, and Ignition. Therefore this can technically be called MUVSI. ***Subscriptions*** are any asynchronous operation that is not required to be within the internal loop of MUV, used to call servers and the likes. Think of it like what is Saga to Redux+Saga. ***Ignition*** is just a simple call to a dispatch that will initialize anything necessary; used for signing the user in, or reading at cookies, etc. Basically things that do not require user input but are required at startup.
+Since v2.0, there are two new concepts added: Ignition and Subscriptions. Therefore this can technically be called MUVisJS.  An ***Ignition*** is just a simple call to a dispatch that will initialize anything necessary; used for signing the user in, or reading at cookies, etc. Basically things that do not require user input but are required at startup. And ***Subscriptions*** are all asynchronous operation that are not required to be within the internal loop of MUV; used to call servers and the likes. Think of it like what is Saga to Redux+Saga.
 
 Ignitions are called only once, while subscriptions are called by the *update* function (or in other words, after actions are dispatched and handled. For they eventually are ***effects of actions***).
 
@@ -43,17 +43,19 @@ Ignitions are called only once, while subscriptions are called by the *update* f
 
      Since v2.0, now you can add the following:
      ```js
+      // dispatch any initializing action
+
+      export const ignite = dispatch => {
+        ...
+      }
+
       // handle effects, and dispatch any actions
 
       export const subscriptions = dispatch => {
         ...
       }
 
-      // dispatch any initializing action
-
-      export const ignite = dispatch => {
-        ...
-      }
+      
      ```
      exporting the subscriptions `subscriptions`,
        and the ignition function `ignite`
@@ -61,9 +63,9 @@ Ignitions are called only once, while subscriptions are called by the *update* f
 2. Create your muv modular initializer `index.mjs` 
     ```js
     import {muv} from 'muvjs/muv.mjs';
-    import {init, update, view} from './App'
+    import {model, update, view, ignite, subscriptions} from './App'
     
-    muv(init)(update)(view)(subscriptions)(ignite)("root");
+    muv(model)(update)(view)(ignite)(subscriptions)("root");
     ```
 3. create the root div, and include your muv modular initializer in your `index.html`
     ```html
@@ -84,7 +86,7 @@ import {div, button} from './node_modules/muvjs/muv-dom.js';
 
 // MODEL
 
-const init =
+export const model =
 {
   count: 0
 };
@@ -92,34 +94,97 @@ const init =
 // UPDATE
 
 const Increment = "increment"
+const increment = () => {
+  return {
+    type: Increment
+  }
+}
 const Decrement = "decrement"
+const decrement = () => {
+  return {
+    type: Decrement
+  }
+}
+const CompleteRequest = "complete-request"
+const completeRequest = (xhr) => {
+  return {
+    type: CompleteRequest,
+    xhr
+  }
+}
+const SignIn = "sign-in"
+const signIn = () => {
+  return {
+    type: SignIn
+  }
+}
 
-const update = model => action => {
-  switch (action) {
-    case Increment: {
+export const update = model => action => {
+  let effects = [];
+  switch (action.type) {
+    case Increment: 
       model = { ...model };
       model.count = model.count + 1;
       break;
-    }
-    case Decrement: {
+    
+    case Decrement: 
       model = { ...model };
       model.count = model.count - 1;
       break;
-    }
+
+    case CompleteRequest:
+      console.log("Request Completed: ", xhr);
+      break;
+
+    case SignIn:
+      effects = effects.concat(makeRequest());
+      break;
   }
-  return model;
+  return {model, effects};
 }
 
 // VIEW 
 
-const view = dispatch => model => 
+export const view = dispatch => model => 
   div()(
     [
-      , button({ onclick: () => dispatch(Decrement) })('-')
+      , button({ onclick: () => dispatch(decrement()) })('-')
       , div()(model.count)
-      , button({ onclick: () => dispatch(Increment) })('+')
+      , button({ onclick: () => dispatch(increment()) })('+')
     ]
   )
+```
+
+```js
+
+const AjaxRequestEffect = "ajax-request";
+const makeRequest = () => {
+  type: AjaxRequest
+}
+
+export const subscriptions = dispatch => effect => {
+  switch (effect.type) {
+    case AjaxRequest:
+      let xhr = new XMLHttpRequest();
+      xhr.open("GET", "localhost:3000", true);
+
+      xhr.onload = () => {
+        dispatch(completeRequest(xhr));
+      };
+
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.setRequestHeader('Content-Type', 'application/json');
+
+      xhr.send({});
+      break;
+  }
+
+
+};
+
+export const ignite = dispatch => {
+  dispatch(signIn());
+};
 ```
 
 view full example at https://github.com/yoyomo/muvjs-example
