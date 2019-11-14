@@ -45,7 +45,7 @@ Ignitions are called only once, while subscriptions are called by the *update* f
      ```js
       // dispatch any initializing action
 
-      export const ignite = dispatch => {
+      export const ignition = dispatch => {
         ...
       }
 
@@ -58,14 +58,14 @@ Ignitions are called only once, while subscriptions are called by the *update* f
       
      ```
      exporting the subscriptions `subscriptions`,
-       and the ignition function `ignite`
+       and the ignition function `ignition`
 
 2. Create your muv modular initializer `index.mjs` 
     ```js
     import {muv} from 'muvjs/muv.mjs';
-    import {model, update, view, ignite, subscriptions} from './App'
+    import {model, update, view, ignition, subscriptions} from './App'
     
-    muv(model)(update)(view)(ignite)(subscriptions)("root");
+    muv({model, update, view, ignition, subscriptions})('root');
     ```
 3. create the root div, and include your muv modular initializer in your `index.html`
     ```html

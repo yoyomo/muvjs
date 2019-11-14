@@ -8,10 +8,9 @@ const handleEffects = subscriptions => effects => {
   })
 }
 
-export const muv = model => update => view => ignition => subscriber => rootId => {
+export const muv = ({model = {}, update = () => {}, view = () => {}, ignition = () => {}, subscriptions = () => {}}) => rootId => {
 
   let root = document.getElementById(rootId);
-  let subscriptions;
   let oldView;
 
   const dispatch = action => {
@@ -28,6 +27,6 @@ export const muv = model => update => view => ignition => subscriber => rootId =
   oldView = view(dispatch)(model)
   root.appendChild(oldView.render())
 
-  subscriptions = subscriber(dispatch);
+  subscriptions = subscriptions(dispatch);
   ignition(dispatch)
 };
