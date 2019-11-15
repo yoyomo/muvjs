@@ -62,13 +62,13 @@ export const rerender = parent => oldView => newView => index => {
     return;
   }
 
-  if (isNull(oldView) && newView.render) {
-    parent.appendChild(newView.render(parent.getAttribute("key"), index));
+  if (isNull(newView)) {
+    if(!isNull(parent.children[index])) parent.removeChild(parent.children[index]);
     return;
   }
 
-  if (isNull(newView)) {
-    parent.removeChild(parent.children[index]);
+  if (isNull(oldView) && newView.render) {
+    parent.appendChild(newView.render(parent.getAttribute("key"), index));
     return;
   }
 
