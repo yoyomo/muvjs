@@ -6,7 +6,7 @@ const handleEffects = subscriptions => effects => {
   effects.map(effect => {
     subscriptions(effect);
   })
-}
+};
 
 export const muv = ({model = {}, update = () => {}, view = () => {}, ignition = () => {}, subscriptions = () => {}}) => rootId => {
 
@@ -19,13 +19,13 @@ export const muv = ({model = {}, update = () => {}, view = () => {}, ignition = 
     handleEffects(subscriptions)(updated.effects);
 
     const newView = view(dispatch)(model);
-    rerender(root)(oldView)(newView)(0)
+    rerender(root)(oldView)(newView)(0);
     oldView = newView;
   };
 
   root.innerHTML = null;
-  oldView = view(dispatch)(model)
-  root.appendChild(oldView.render())
+  oldView = view(dispatch)(model);
+  root.appendChild(oldView.render());
 
   subscriptions = subscriptions(dispatch);
   ignition(dispatch)

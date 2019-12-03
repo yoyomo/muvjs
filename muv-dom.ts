@@ -1,63 +1,73 @@
-"use strict";
+export const isNull = (value: any) => value === undefined || value === null;
+export const isArray = (a: any) => !isNull(a) && a instanceof Array;
 
-export const isNull = value => value === undefined || value === null;
-export const isArray = a => !isNull(a) && a instanceof Array;
-
-const setAttributes = element => attributes => {
+const setAttributes = (element: HTMLElement) => (attributes: {[k: string]: any}) => {
   if (isNull(attributes)) return;
 
   for (let attr in attributes) {
     if (typeof attributes[attr] === "function") {
-      element[attr] = attributes[attr];
+      (element as any)[attr] = attributes[attr];
     } else {
       element.setAttribute(attr, attributes[attr]);
     }
   }
 };
 
-const appendChildren = element => child => index => {
+const appendChildren = (element: HTMLElement) => (child: any) => (index: number) => {
   if (isNull(child)) return;
 
   if (typeof child === "object") {
     if (isArray(child)) {
-      child.map((c, i) => appendChildren(element)(c)(i))
+      (child as View[]).map((c, i) => appendChildren(element)(c)(i))
     } else {
-      element.appendChild(child.render(element.getAttribute("key"), index));
+      element.appendChild((child as View).render(element.getAttribute("key") || "", index));
     }
   } else {
     element.innerText = child;
   }
 };
 
-export const component = elementType => attributes => (...children) => {
-  return {
-    elementType: elementType,
-    attributes: attributes,
-    children: children.flat(),
-    genKey: function (parentKey, index) {
-      const geneKey = parentKey ? `${parentKey}-${index}-` : "";
-      this.attributes = this.attributes || {};
-      this.attributes["key"] = geneKey + elementType;
-    },
-    render: function (parentKey, index) {
-      let element = document.createElement(elementType);
+export interface View {
+  elementType: keyof HTMLElementTagNameMap,
+  attributes: any,
+  children: any,
+  genKey: (parentKey?: string, index?: number) => void,
+  render: (parentKey?: string, index?: number) => Node
+}
 
-      this.genKey(parentKey, index);
-      setAttributes(element)(this.attributes);
+export function component<T>(elementType: keyof HTMLElementTagNameMap) {
+  return (attributes?: any) => (...children: any): View => {
+    return {
+      elementType: elementType,
+      attributes: attributes,
+      children: children.flat(),
+      genKey: (parentKey, index) => {
+        const geneKey = parentKey ? `${parentKey}-${index}-` : "";
+        this.attributes = this.attributes || {};
+        this.attributes["key"] = geneKey + elementType;
+      },
+      render: (parentKey, index) => {
+        let element = document.createElement(elementType);
 
-      appendChildren(element)(this.children)(0);
+        this.genKey(parentKey, index);
+        setAttributes(element)(this.attributes);
 
-      return element;
-    }
+        appendChildren(element)(this.children)(0);
+
+        return element;
+      }
+    };
   };
-};
+}
 
-export const rerender = parent => oldView => newView => index => {
+export const rerender = (parent: HTMLElement | null) => (oldView: View) => (newView: View) => (index: number) => {
+
+  if(!parent) return;
 
   if (typeof oldView !== "object" && typeof newView !== "object") {
     if (oldView !== newView) {
       parent.innerText = newView;
-      parent.value = newView;
+      (parent as HTMLInputElement).value = newView;
     }
     return;
   }
@@ -68,12 +78,12 @@ export const rerender = parent => oldView => newView => index => {
   }
 
   if (isNull(oldView) && newView.render) {
-    parent.appendChild(newView.render(parent.getAttribute("key"), index));
+    parent.appendChild(newView.render(parent.getAttribute("key") || "", index));
     return;
   }
 
   if ((!newView.attributes || !newView.attributes["key"]) && newView.genKey) {
-    newView.genKey(parent.getAttribute("key"), index)
+    newView.genKey(parent.getAttribute("key") || "", index)
   }
 
 
@@ -84,7 +94,7 @@ export const rerender = parent => oldView => newView => index => {
       for (let attr in {...oldView.attributes, ...newView.attributes}) {
         if (oldView.attributes[attr] !== newView.attributes[attr]) {
           if (typeof newView.attributes[attr] === "function") {
-            element[attr] = newView.attributes[attr];
+            (element as any)[attr] = newView.attributes[attr];
           } else {
             element.setAttribute(attr, newView.attributes[attr]);
           }
@@ -97,11 +107,11 @@ export const rerender = parent => oldView => newView => index => {
 
     const childrenNum = newChildren.length >= oldChildren.length ? newChildren.length : oldChildren.length;
     for (let i = 0; i < childrenNum; i++) {
-      rerender(parent.children[index])(oldChildren[i])(newChildren[i])(i)
+      rerender(parent.children[index] as HTMLElement)(oldChildren[i])(newChildren[i])(i)
     }
 
   } else {
-    parent.insertBefore(newView.render(parent.getAttribute("key"), index), parent.children[index]);
+    parent.insertBefore(newView.render(parent.getAttribute("key") || "", index), parent.children[index]);
     parent.removeChild(parent.children[index + 1])
   }
 };
@@ -167,7 +177,6 @@ export const link = component('link');
 export const map = component('map');
 export const mark = component('mark');
 export const menu = component('menu');
-export const menuitem = component('menuitem');
 export const meta = component('meta');
 export const meter = component('meter');
 export const nav = component('nav');
