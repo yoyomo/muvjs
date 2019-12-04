@@ -34,12 +34,12 @@ export const component = elementType => attributes => (...children) => {
     elementType: elementType,
     attributes: attributes,
     children: children.flat(),
-    genKey: (parentKey, index) => {
+    genKey: function (parentKey, index) {
       const geneKey = parentKey ? `${parentKey}-${index}-` : "";
       this.attributes = this.attributes || {};
       this.attributes["key"] = geneKey + elementType;
     },
-    render: (parentKey, index) => {
+    render: function (parentKey, index) {
       let element = document.createElement(elementType);
 
       this.genKey(parentKey, index);
