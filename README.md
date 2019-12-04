@@ -10,6 +10,12 @@ Since v2.0, there are two new concepts added: Ignition and Subscriptions. Theref
 
 Ignitions are called only once, while subscriptions are called by the *update* function (or in other words, after actions are dispatched and handled. For they eventually are ***effects of actions***).
 
+### Installation
+
+```bash
+npm i muvjs
+```
+
 ### Usage
 1. Construct your modular app `App.mjs` with the following syntax
     ```js
