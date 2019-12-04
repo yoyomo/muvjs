@@ -1,3 +1,5 @@
+"use strict";
+
 export const isNull = (value) => value === undefined || value === null;
 export const isArray = (a) => !isNull(a) && a instanceof Array;
 
