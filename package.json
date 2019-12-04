@@ -1,6 +1,6 @@
 {
   "name": "muvjs",
-  "version": "2.3.0",
+  "version": "2.3.0-beta.0",
   "description": "MUV architecture in pure javascript",
   "main": "sample/muv.js",
   "repository": {
