@@ -1,7 +1,7 @@
 "use strict";
 
 export const isNull = value => value === undefined || value === null;
-export const isArray = a => !isNull(a) && a instanceof Array
+export const isArray = a => !isNull(a) && a instanceof Array;
 
 const setAttributes = element => attributes => {
   if (isNull(attributes)) return;
@@ -22,7 +22,7 @@ const appendChildren = element => child => index => {
     if (isArray(child)) {
       child.map((c, i) => appendChildren(element)(c)(i))
     } else {
-      element.appendChild(child.render(element.getAttribute("key"), index));
+      element.appendChild(child.render(element.getAttribute("key") || "", index));
     }
   } else {
     element.innerText = child;
@@ -35,7 +35,7 @@ export const component = elementType => attributes => (...children) => {
     attributes: attributes,
     children: children.flat(),
     genKey: function (parentKey, index) {
-      const geneKey = parentKey ? `${parentKey}-${index}-` : ""
+      const geneKey = parentKey ? `${parentKey}-${index}-` : "";
       this.attributes = this.attributes || {};
       this.attributes["key"] = geneKey + elementType;
     },
@@ -50,9 +50,11 @@ export const component = elementType => attributes => (...children) => {
       return element;
     }
   };
-}
+};
 
 export const rerender = parent => oldView => newView => index => {
+
+  if (!parent) return;
 
   if (typeof oldView !== "object" && typeof newView !== "object") {
     if (oldView !== newView) {
@@ -63,17 +65,17 @@ export const rerender = parent => oldView => newView => index => {
   }
 
   if (isNull(newView)) {
-    if(!isNull(parent.children[index])) parent.removeChild(parent.children[index]);
+    if (!isNull(parent.children[index])) parent.removeChild(parent.children[index]);
     return;
   }
 
   if (isNull(oldView) && newView.render) {
-    parent.appendChild(newView.render(parent.getAttribute("key"), index));
+    parent.appendChild(newView.render(parent.getAttribute("key") || "", index));
     return;
   }
 
   if ((!newView.attributes || !newView.attributes["key"]) && newView.genKey) {
-    newView.genKey(parent.getAttribute("key"), index)
+    newView.genKey(parent.getAttribute("key") || "", index)
   }
 
 
@@ -101,10 +103,10 @@ export const rerender = parent => oldView => newView => index => {
     }
 
   } else {
-    parent.insertBefore(newView.render(parent.getAttribute("key"), index), parent.children[index])
+    parent.insertBefore(newView.render(parent.getAttribute("key") || "", index), parent.children[index]);
     parent.removeChild(parent.children[index + 1])
   }
-}
+};
 
 export const div = component('div');
 export const button = component('button');
@@ -167,7 +169,6 @@ export const link = component('link');
 export const map = component('map');
 export const mark = component('mark');
 export const menu = component('menu');
-export const menuitem = component('menuitem');
 export const meta = component('meta');
 export const meter = component('meter');
 export const nav = component('nav');
