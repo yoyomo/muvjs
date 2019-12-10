@@ -1,6 +1,6 @@
 {
   "name": "muvjs",
-  "version": "2.3.0-beta.1",
+  "version": "2.3.0",
   "description": "MUV architecture in pure javascript",
   "main": "muv.mjs",
   "repository": {
@@ -9,8 +9,11 @@
   },
   "keywords": [
     "muv",
+    "model update view",
     "mvc",
-    "js"
+    "model view controller",
+    "js",
+    "javascript"
   ],
   "author": "Armando J. Ortiz",
   "license": "ISC",
