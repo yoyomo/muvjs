@@ -1,5 +1,5 @@
 
-import { View } from 'muvjs/muv-dom';
+import { View } from 'muv-dom';
 
 export type U<M, A, E> = (m: M) => (a: A) => { model: M, effects?: E[] };
 export type V<M, A> = (d: (a: A) => void) => (m: M) => View;
