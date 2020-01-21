@@ -52,7 +52,7 @@ export const component = elementType => attributes => (...children) => {
   };
 };
 
-export const rerender = parent => oldView => newView => index => {
+export const rerender = parent => oldView => newView => index => requestAnimationFrame(() => {
 
   if (!parent) return;
 
@@ -106,7 +106,7 @@ export const rerender = parent => oldView => newView => index => {
     parent.insertBefore(newView.render(parent.getAttribute("key") || "", index), parent.children[index]);
     parent.removeChild(parent.children[index + 1])
   }
-};
+});
 
 export const div = component('div');
 export const button = component('button');
