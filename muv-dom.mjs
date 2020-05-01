@@ -195,6 +195,7 @@ export const style = component('style');
 export const sub = component('sub');
 export const summary = component('summary');
 export const sup = component('sup');
+export const svg = component('svg');
 export const table = component('table');
 export const tbody = component('tbody');
 export const td = component('td');
