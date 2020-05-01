@@ -40,7 +40,12 @@ export const component = elementType => attributes => (...children) => {
       this.attributes["key"] = geneKey + elementType;
     },
     render: function (parentKey, index) {
-      let element = document.createElement(elementType);
+      let element;
+      if(nsElements.indexOf(elementType) !== -1) {
+        element = document.createElementNS('http://www.w3.org/2000/svg', elementType)
+      } else {
+        element = document.createElement(elementType);
+      }
 
       this.genKey(parentKey, index);
       setAttributes(element)(this.attributes);
@@ -107,6 +112,8 @@ export const rerender = parent => oldView => newView => index => requestAnimatio
     parent.removeChild(parent.children[index + 1])
   }
 });
+
+export const nsElements = ['svg', 'path']
 
 export const div = component('div');
 export const button = component('button');
