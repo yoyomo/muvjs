@@ -179,6 +179,7 @@ export const option = component('option');
 export const output = component('output');
 export const p = component('p');
 export const param = component('param');
+export const path = component('path');
 export const pre = component('pre');
 export const progress = component('progress');
 export const q = component('q');
